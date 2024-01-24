@@ -10,8 +10,9 @@ async function fetchBytes(url) {
 async function run() {
   try {
     // Load model, labels file and WONNX
-    const labels = fetch("./data/models/squeeze-labels.txt").then(r => r.text());
-    const [modelBytes, initResult, labelsResult] = await Promise.all([fetchBytes("./data/models/opt-squeeze.onnx"), init(), labels])
+    // first download the model
+    const labels = fetch("assets/squeeze-labels.txt").then(r => r.text());
+    const [modelBytes, initResult, labelsResult] = await Promise.all([fetchBytes("assets/opt-squeeze.onnx"), init(), labels])
     console.log("Initialized", { modelBytes, initResult, Session, labelsResult});
     const squeezeWidth = 224;
     const squeezeHeight = 224;
@@ -92,6 +93,8 @@ async function run() {
         document.getElementById("perf").innerText = `Inference time: ${avgFrameTime.toFixed(2)}ms, at most ${Math.floor(1000/avgFrameTime)} fps`;
       }
       catch (e) {
+        //
+        document.getElementById("log").innerText = `No GPU device found`;
         console.error(e, e.toString());
       }
     }
@@ -108,6 +111,7 @@ async function run() {
     tick();
   }
   catch(e) {
+    document.getElementById('log').innerText = 'No GPU device found';
     console.error(e, e.toString());
   }
 }
